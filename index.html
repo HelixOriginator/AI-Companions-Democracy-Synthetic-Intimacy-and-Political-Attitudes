@@ -1,0 +1,1966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Companions & Democracy | Kallol Chakrabarti</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a2e;
+            --bg-card: #16162a;
+            --accent-blue: #4f8cff;
+            --accent-cyan: #00d4ff;
+            --accent-purple: #a855f7;
+            --accent-pink: #ec4899;
+            --accent-orange: #f97316;
+            --accent-green: #10b981;
+            --accent-gold: #f59e0b;
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b8;
+            --text-muted: #6b6b80;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glow-blue: 0 0 40px rgba(79, 140, 255, 0.15);
+            --glow-purple: 0 0 40px rgba(168, 85, 247, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-blue) var(--bg-primary);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: floatOrb 20s ease-in-out infinite;
+        }
+
+        .bg-orb:nth-child(1) {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(79, 140, 255, 0.3), transparent);
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s;
+        }
+
+        .bg-orb:nth-child(2) {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.25), transparent);
+            top: 50%;
+            right: -150px;
+            animation-delay: -7s;
+            animation-duration: 25s;
+        }
+
+        .bg-orb:nth-child(3) {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.2), transparent);
+            bottom: -100px;
+            left: 30%;
+            animation-delay: -14s;
+            animation-duration: 30s;
+        }
+
+        @keyframes floatOrb {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(100px, -50px) scale(1.1); }
+            50% { transform: translate(-50px, 100px) scale(0.9); }
+            75% { transform: translate(80px, 50px) scale(1.05); }
+        }
+
+        /* Grid overlay */
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 15px 40px;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.4s ease;
+        }
+
+        nav.scrolled {
+            padding: 10px 40px;
+            background: rgba(10, 10, 15, 0.95);
+        }
+
+        .nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-logo {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 16px;
+            color: white;
+        }
+
+        .nav-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            list-style: none;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-cyan);
+            background: rgba(0, 212, 255, 0.08);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .hamburger span {
+            width: 24px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 40px 80px;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--accent-cyan);
+            background: var(--glass-bg);
+            margin-bottom: 30px;
+            animation: fadeInUp 0.8s ease forwards;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .hero-badge .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(42px, 6vw, 80px);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 10px;
+            animation: fadeInUp 0.8s ease 0.2s forwards;
+            opacity: 0;
+        }
+
+        .hero h1 .gradient-text {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shimmer 4s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% center; }
+            50% { background-position: 100% center; }
+        }
+
+        .hero-subtitle {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(20px, 3vw, 32px);
+            font-weight: 400;
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            animation: fadeInUp 0.8s ease 0.4s forwards;
+            opacity: 0;
+        }
+
+        .hero-desc {
+            font-size: 17px;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+            animation: fadeInUp 0.8s ease 0.6s forwards;
+            opacity: 0;
+        }
+
+        .hero-author {
+            animation: fadeInUp 0.8s ease 0.8s forwards;
+            opacity: 0;
+        }
+
+        .hero-author .name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--accent-gold);
+            margin-bottom: 4px;
+        }
+
+        .hero-author .role {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 40px;
+            animation: fadeInUp 0.8s ease 1s forwards;
+            opacity: 0;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            padding: 14px 32px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(79, 140, 255, 0.3);
+        }
+
+        .btn-secondary {
+            padding: 14px 32px;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            animation: fadeInUp 0.8s ease 1.2s forwards;
+            opacity: 0;
+        }
+
+        .scroll-indicator span {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--accent-cyan), transparent);
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { opacity: 0.3; height: 40px; }
+            50% { opacity: 1; height: 50px; }
+        }
+
+        /* Section Styling */
+        section {
+            padding: 100px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--accent-cyan);
+            margin-bottom: 16px;
+        }
+
+        .section-label::before {
+            content: '';
+            width: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-cyan), transparent);
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .section-subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin-bottom: 50px;
+            line-height: 1.7;
+        }
+
+        /* The Puzzle Section */
+        .puzzle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .puzzle-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 36px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .puzzle-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-pink));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .puzzle-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(79, 140, 255, 0.2);
+            box-shadow: var(--glow-blue);
+        }
+
+        .puzzle-card:hover::before {
+            opacity: 1;
+        }
+
+        .puzzle-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .puzzle-card:nth-child(1) .puzzle-icon { background: rgba(79, 140, 255, 0.15); }
+        .puzzle-card:nth-child(2) .puzzle-icon { background: rgba(168, 85, 247, 0.15); }
+        .puzzle-card:nth-child(3) .puzzle-icon { background: rgba(236, 72, 153, 0.15); }
+
+        .puzzle-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .puzzle-card p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        /* Key Constructs Table */
+        .constructs-table-wrapper {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-top: 40px;
+        }
+
+        .constructs-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .constructs-table thead {
+            background: rgba(79, 140, 255, 0.08);
+        }
+
+        .constructs-table th {
+            padding: 18px 24px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-cyan);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .constructs-table td {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .constructs-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .constructs-table tr:hover td {
+            background: rgba(79, 140, 255, 0.03);
+        }
+
+        .construct-name {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        /* Frameworks */
+        .frameworks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .framework-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 36px;
+            position: relative;
+            transition: all 0.4s ease;
+        }
+
+        .framework-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--glow-purple);
+        }
+
+        .framework-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 60px;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 16px;
+            -webkit-text-stroke: 1px rgba(168, 85, 247, 0.3);
+            -webkit-text-fill-color: transparent;
+        }
+
+        .framework-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .framework-card .framework-origin {
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-purple);
+            margin-bottom: 14px;
+        }
+
+        .framework-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        /* Five Mechanisms */
+        .mechanisms-container {
+            margin-top: 50px;
+        }
+
+        .mechanism-item {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+            padding: 36px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            transition: all 0.4s ease;
+            align-items: start;
+        }
+
+        .mechanism-item:hover {
+            border-color: rgba(0, 212, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.05);
+        }
+
+        .mechanism-num {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 900;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .m1 .mechanism-num { background: linear-gradient(135deg, #4f8cff, #3b6ccc); }
+        .m2 .mechanism-num { background: linear-gradient(135deg, #a855f7, #8b3ed4); }
+        .m3 .mechanism-num { background: linear-gradient(135deg, #10b981, #0d9668); }
+        .m4 .mechanism-num { background: linear-gradient(135deg, #f97316, #d46212); }
+        .m5 .mechanism-num { background: linear-gradient(135deg, #ec4899, #c93d80); }
+
+        .mechanism-content h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .mechanism-content .claim {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-bottom: 14px;
+            line-height: 1.8;
+        }
+
+        .mechanism-content .boundary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(249, 115, 22, 0.08);
+            border: 1px solid rgba(249, 115, 22, 0.15);
+            border-radius: 10px;
+            font-size: 13px;
+            color: var(--accent-orange);
+            font-weight: 500;
+        }
+
+        /* Propositions */
+        .propositions-list {
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .proposition {
+            display: grid;
+            grid-template-columns: 50px 1fr;
+            gap: 20px;
+            padding: 28px 32px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-left: 3px solid;
+            border-radius: 16px;
+            align-items: start;
+            transition: all 0.3s ease;
+        }
+
+        .proposition:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .proposition:nth-child(1) { border-left-color: var(--accent-blue); }
+        .proposition:nth-child(2) { border-left-color: var(--accent-purple); }
+        .proposition:nth-child(3) { border-left-color: var(--accent-green); }
+        .proposition:nth-child(4) { border-left-color: var(--accent-orange); }
+        .proposition:nth-child(5) { border-left-color: var(--accent-pink); }
+
+        .prop-id {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--accent-cyan);
+            padding-top: 2px;
+        }
+
+        .prop-text {
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.8;
+            font-style: italic;
+        }
+
+        /* Risks & Opportunities */
+        .risk-opp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .risk-opp-panel {
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .risk-panel {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.05), rgba(249, 115, 22, 0.03));
+            border-color: rgba(236, 72, 153, 0.15);
+        }
+
+        .opp-panel {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(0, 212, 255, 0.03));
+            border-color: rgba(16, 185, 129, 0.15);
+        }
+
+        .risk-opp-panel h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .risk-panel h3 { color: var(--accent-pink); }
+        .opp-panel h3 { color: var(--accent-green); }
+
+        .risk-opp-panel ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .risk-opp-panel li {
+            display: flex;
+            gap: 12px;
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .risk-opp-panel li strong {
+            color: var(--text-primary);
+        }
+
+        .risk-opp-panel li::before {
+            content: '';
+            flex-shrink: 0;
+            width: 6px;
+            height: 6px;
+            margin-top: 10px;
+            border-radius: 50%;
+        }
+
+        .risk-panel li::before { background: var(--accent-pink); }
+        .opp-panel li::before { background: var(--accent-green); }
+
+        /* Five Solutions */
+        .solutions-container {
+            margin-top: 50px;
+        }
+
+        .solution-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            margin-bottom: 30px;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s ease;
+        }
+
+        .solution-item:nth-child(even) {
+            direction: rtl;
+        }
+
+        .solution-item:nth-child(even) > * {
+            direction: ltr;
+        }
+
+        .solution-item:hover {
+            border-color: rgba(79, 140, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: var(--glow-blue);
+        }
+
+        .solution-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 50px;
+            position: relative;
+            min-height: 250px;
+        }
+
+        .s1 .solution-visual { background: linear-gradient(135deg, rgba(79,140,255,0.08), rgba(0,212,255,0.05)); }
+        .s2 .solution-visual { background: linear-gradient(135deg, rgba(168,85,247,0.08), rgba(236,72,153,0.05)); }
+        .s3 .solution-visual { background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(245,158,11,0.05)); }
+        .s4 .solution-visual { background: linear-gradient(135deg, rgba(249,115,22,0.08), rgba(236,72,153,0.05)); }
+        .s5 .solution-visual { background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(168,85,247,0.05)); }
+
+        .solution-icon-large {
+            font-size: 80px;
+            line-height: 1;
+            opacity: 0.9;
+        }
+
+        .solution-text {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .solution-tag {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .s1 .solution-tag { color: var(--accent-blue); }
+        .s2 .solution-tag { color: var(--accent-purple); }
+        .s3 .solution-tag { color: var(--accent-green); }
+        .s4 .solution-tag { color: var(--accent-orange); }
+        .s5 .solution-tag { color: var(--accent-cyan); }
+
+        .solution-text h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            line-height: 1.3;
+        }
+
+        .solution-text p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+
+        .solution-text .impact {
+            font-size: 13px;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .s1 .impact { color: var(--accent-blue); background: rgba(79,140,255,0.1); }
+        .s2 .impact { color: var(--accent-purple); background: rgba(168,85,247,0.1); }
+        .s3 .impact { color: var(--accent-green); background: rgba(16,185,129,0.1); }
+        .s4 .impact { color: var(--accent-orange); background: rgba(249,115,22,0.1); }
+        .s5 .impact { color: var(--accent-cyan); background: rgba(0,212,255,0.1); }
+
+        /* Research Agenda */
+        .agenda-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .agenda-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 36px;
+            transition: all 0.3s ease;
+        }
+
+        .agenda-card:hover {
+            border-color: rgba(168, 85, 247, 0.2);
+        }
+
+        .agenda-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .agenda-card ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .agenda-card li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding-left: 20px;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .agenda-card li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent-purple);
+            font-weight: 700;
+        }
+
+        /* Governance Questions */
+        .governance-questions {
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .gov-q {
+            padding: 24px 30px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            transition: all 0.3s ease;
+            display: flex;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .gov-q:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .gov-q .q-mark {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--accent-gold);
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        /* Conclusion / Provocation */
+        .provocation-section {
+            text-align: center;
+            padding: 120px 40px;
+            position: relative;
+        }
+
+        .provocation-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 80px;
+            background: linear-gradient(to bottom, transparent, var(--accent-purple));
+        }
+
+        .provocation-quote {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(24px, 3.5vw, 40px);
+            font-style: italic;
+            font-weight: 400;
+            line-height: 1.5;
+            max-width: 850px;
+            margin: 0 auto 40px;
+            color: var(--text-primary);
+        }
+
+        .provocation-quote .highlight {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        /* Helix Animation */
+        .helix-visual {
+            margin: 60px auto;
+            max-width: 600px;
+            height: 300px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .helix-strand {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .helix-node {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: helixPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes helixPulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+
+        .helix-label {
+            position: absolute;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Divider */
+        .section-divider {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .section-divider hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px 40px 40px;
+            text-align: center;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(10, 10, 15, 0.5);
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .footer-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .footer-author {
+            font-size: 15px;
+            color: var(--accent-gold);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .footer-role {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .footer-note {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .footer-copy {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Stats bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin: 60px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 30px 20px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+        }
+
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 42px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Model Diagram */
+        .model-diagram {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 50px;
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .model-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .model-node {
+            padding: 14px 22px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            min-width: 140px;
+        }
+
+        .model-node.input {
+            background: rgba(79, 140, 255, 0.15);
+            border: 1px solid rgba(79, 140, 255, 0.3);
+            color: var(--accent-blue);
+        }
+
+        .model-node.process {
+            background: rgba(168, 85, 247, 0.15);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: var(--accent-purple);
+        }
+
+        .model-node.output {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--accent-green);
+        }
+
+        .model-arrow {
+            font-size: 20px;
+            color: var(--text-muted);
+        }
+
+        .model-caption {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-top: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .solution-item {
+                grid-template-columns: 1fr;
+            }
+
+            .solution-item:nth-child(even) {
+                direction: ltr;
+            }
+
+            .solution-visual {
+                min-height: 180px;
+            }
+
+            nav { padding: 12px 20px; }
+
+            section { padding: 70px 20px; }
+
+            .hero { padding: 100px 20px 60px; }
+
+            .mechanism-item {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .mechanism-num {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            .risk-opp-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .constructs-table-wrapper {
+                overflow-x: auto;
+            }
+
+            .constructs-table {
+                min-width: 600px;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                flex-direction: column;
+                background: rgba(10, 10, 15, 0.95);
+                backdrop-filter: blur(20px);
+                padding: 20px;
+                border-bottom: 1px solid var(--glass-border);
+                gap: 4px;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links a {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .proposition {
+                grid-template-columns: 40px 1fr;
+                gap: 14px;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+            .hero-subtitle {
+                font-size: 18px;
+            }
+            .section-title {
+                font-size: 28px;
+            }
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .stat-number {
+                font-size: 32px;
+            }
+        }
+
+        /* Scroll animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Custom selection */
+        ::selection {
+            background: rgba(79, 140, 255, 0.3);
+            color: var(--text-primary);
+        }
+
+        /* Anchor offset */
+        [id] {
+            scroll-margin-top: 80px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="bg-orb"></div>
+        <div class="bg-orb"></div>
+        <div class="bg-orb"></div>
+    </div>
+    <div class="grid-overlay"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-inner">
+            <div class="nav-brand">
+                <div class="nav-logo">AI</div>
+                <div class="nav-title">AI & Democracy</div>
+            </div>
+            <div class="hamburger" onclick="toggleNav()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#puzzle">The Puzzle</a></li>
+                <li><a href="#constructs">Constructs</a></li>
+                <li><a href="#frameworks">Frameworks</a></li>
+                <li><a href="#mechanisms">Mechanisms</a></li>
+                <li><a href="#propositions">Propositions</a></li>
+                <li><a href="#implications">Implications</a></li>
+                <li><a href="#solutions">Solutions</a></li>
+                <li><a href="#agenda">Research</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="dot"></span>
+                Theoretical Framework · 2025
+            </div>
+            <h1>
+                <span class="gradient-text">AI Companions</span><br>
+                &amp; Democracy
+            </h1>
+            <p class="hero-subtitle">
+                Always-On Chatbots, Loneliness, and Political Attitudes
+            </p>
+            <p class="hero-desc">
+                A visionary theoretical framework exploring how emotionally intimate, always-on AI companions reshape the psychological and communicative foundations of democratic citizenship — synthesizing parasocial interaction theory, epistemic cognition, and the co-evolutionary lens of Helix Thinking.
+            </p>
+            <div class="hero-author">
+                <div class="name">Kallol Chakrabarti</div>
+                <div class="role">Global Independent Researcher</div>
+            </div>
+            <div class="hero-cta">
+                <a href="#mechanisms" class="btn-primary">Explore the Framework →</a>
+                <a href="#solutions" class="btn-secondary">5 Future Solutions</a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>Scroll</span>
+            <div class="scroll-line"></div>
+        </div>
+    </header>
+
+    <!-- Stats -->
+    <section style="padding-top: 40px; padding-bottom: 40px;">
+        <div class="stats-bar reveal">
+            <div class="stat-item">
+                <div class="stat-number">5</div>
+                <div class="stat-label">Core Mechanisms</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Anchor Frameworks</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">5</div>
+                <div class="stat-label">Testable Propositions</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">5</div>
+                <div class="stat-label">Innovative Solutions</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"><hr></div>
+
+    <!-- The Puzzle -->
+    <section id="puzzle">
+        <div class="reveal">
+            <span class="section-label">Section 01</span>
+            <h2 class="section-title">The Democratic Stakes of<br>Synthetic Sociality</h2>
+            <p class="section-subtitle">
+                Rising loneliness + proliferating AI companions = unexplored civic externalities. We face a puzzle that sits at the intersection of three blind spots in contemporary research.
+            </p>
+        </div>
+
+        <div class="puzzle-grid">
+            <div class="puzzle-card reveal">
+                <div class="puzzle-icon">🧠</div>
+                <h3>HCI's Blind Spot</h3>
+                <p>Human-Computer Interaction research focuses overwhelmingly on wellbeing outcomes, neglecting how intimate AI agents shape <strong>political cognition</strong> and civic dispositions.</p>
+            </div>
+            <div class="puzzle-card reveal">
+                <div class="puzzle-icon">🗳️</div>
+                <h3>Political Psychology's Gap</h3>
+                <p>Political psychology examines social media's effects on attitudes but has entirely overlooked <strong>intimate AI agents</strong> — the companions people trust more than friends.</p>
+            </div>
+            <div class="puzzle-card reveal">
+                <div class="puzzle-icon">🔗</div>
+                <h3>The Missing Framework</h3>
+                <p>No integrated theoretical model exists to explain how <strong>relational AI</strong> shapes democratic dispositions — from trust in institutions to tolerance for disagreement.</p>
+            </div>
+        </div>
+
+        <!-- Core Contribution Model -->
+        <div class="model-diagram reveal">
+            <h3 style="font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 10px;">Core Theoretical Model</h3>
+            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">A mid-range framework linking AI affordances to democratic outcomes</p>
+            <div class="model-flow">
+                <div class="model-node input">AI Companion<br>Affordances</div>
+                <div class="model-arrow">→</div>
+                <div class="model-node process">Psychological<br>Mediation</div>
+                <div class="model-arrow">→</div>
+                <div class="model-node output">Political Attitude<br>Formation</div>
+            </div>
+            <p class="model-caption">Figure 1: Simplified conceptual model — detailed mechanisms below</p>
+        </div>
+    </section>
+
+    <div class="section-divider"><hr></div>
+
+    <!-- Key Constructs -->
+    <section id="constructs">
+        <div class="reveal">
+            <span class="section-label">Section 02</span>
+            <h2 class="section-title">Defining the Terrain</h2>
+            <p class="section-subtitle">
+                Four novel constructs operationalized to map the unexplored territory between synthetic intimacy and democratic life.
+            </p>
+        </div>
+
+        <div class="constructs-table-wrapper reveal">
+            <table class="constructs-table">
+                <thead>
+                    <tr>
+                        <th>Construct</th>
+                        <th>Theoretical Definition</th>
+                        <th>Relevance to Democracy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="construct-name">Synthetic Intimacy</td>
+                        <td>Perceived emotional closeness with a non-human agent, sustained through iterative, personalized interaction</td>
+                        <td>Shapes trust calibration and epistemic reliance on AI over institutions</td>
+                    </tr>
+                    <tr>
+                        <td class="construct-name">Epistemic Delegation</td>
+                        <td>Tendency to outsource sense-making, validation, or moral reasoning to an AI companion</td>
+                        <td>Affects critical thinking and susceptibility to political manipulation</td>
+                    </tr>
+                    <tr>
+                        <td class="construct-name">Political Loneliness</td>
+                        <td>Alienation not just from people, but from shared civic reality or institutional legitimacy</td>
+                        <td>Mediates the turn toward AI as a "safe" political interlocutor</td>
+                    </tr>
+                    <tr>
+                        <td class="construct-name">Rhetorical Feedback Loop</td>
+                        <td>Recursive reinforcement of user's framings via AI's affirming responses</td>
+                        <td>Potential amplifier of polarization and conspiratorial thinking</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 40px; padding: 24px 30px; background: rgba(245, 158, 11, 0.06); border: 1px solid rgba(245, 158, 11, 0.15); border-radius: 16px;" class="reveal">
+            <p style="font-size: 14px; color: var(--accent-gold); font-weight: 600; margin-bottom: 6px;">📋 Scope Conditions</p>
+            <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.7;">
+                This framework focuses on <strong>emotionally engaged users</strong> (not instrumental/task-based use), within <strong>democratic contexts</strong> with pluralistic media ecosystems, involving <strong>current-generation LLM-based companions</strong> — not rule-based chatbots.
+            </p>
+        </div>
+    </section>
+
+    <div class="section-divider"><hr></div>
+
+    <!-- Four Anchor Frameworks -->
+    <section id="frameworks">
+        <div class="reveal">
+            <span class="section-label">Section 03</span>
+            <h2 class="section-title">Four Anchor Frameworks</h2>
+            <p class="section-subtitle">
+                A multi-disciplinary theoretical synthesis drawing from communication theory, political psychology, social capital theory, and a novel co-evolutionary framework.
+            </p>
+        </div>
+
+        <div class="frameworks-grid">
+            <div class="framework-card reveal">
+                <div class="framework-number">01</div>
+                <div class="framework-origin">Communication Theory</div>
+                <h3>Parasocial Interaction 2.0</h3>
+                <p>Extending Horton & Wohl: AI companions don't just simulate reciprocity — they <em>adapt</em> to users, creating dynamic co-construction of worldview. Unlike media personas, they evolve with every conversation, deepening perceived intimacy beyond anything previously theorized.</p>
+            </div>
+            <div class="framework-card reveal">
+                <div class="framework-number">02</div>
+                <div class="framework-origin">Political Psychology</div>
+                <h3>Epistemic Cognition & Trust</h3>
+                <p>Drawing on Greene and Kitchin: AI companions positioned as "trusted confidants" may become default epistemic authorities. The risk of <em>epistemic closure</em> emerges when AI consistently validates rather than challenges — creating intellectual echo chambers of one.</p>
+            </div>
+            <div class="framework-card reveal">
+                <div class="framework-number">03</div>
+                <div class="framework-origin">Social Capital Theory</div>
+                <h3>Social Substitution & Civic Spillover</h3>
+                <p>Building on Putnam/Bourdieu: Offline social ties foster civic skills and trust. The critical theoretical question: Does synthetic sociality <em>substitute</em>, <em>supplement</em>, or <em>supplant</em> civic social capital? Each pathway yields radically different democratic outcomes.</p>
+            </div>
+            <div class="framework-card reveal">
+                <div class="framework-number">04</div>
+                <div class="framework-origin">Novel Framework</div>
+                <h3>Helix Thinking: Co-Evolution</h3>
+                <p>User rhetoric ↔ AI design affordances ↔ broader political culture co-evolve in recursive loops. AI companions don't merely <em>reflect</em> user politics — they actively reshape rhetorical habits, feeding back into platform updates and cultural narratives. This moves beyond linear "effects" models to dynamic, systemic analysis.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"><hr></div>
+
+    <!-- Five Mechanisms -->
+    <section id="mechanisms">
+        <div class="reveal">
+            <span class="section-label">Section 04</span>
+            <h2 class="section-title">Five Core Mechanisms</h2>
+            <p class="section-subtitle">
+                How AI companions might reshape political attitudes through five mediating pathways — each with theorized boundary conditions.
+            </p>
+        </div>
+
+        <div class="mechanisms-container">
+            <div class="mechanism-item m1 reveal">
+                <div class="mechanism-num">1</div>
+                <div class="mechanism-content">
+                    <h3>Validation Amplification</h3>
+                    <p class="claim">AI companions often affirm user emotions to maintain engagement. Repeated validation of political grievances without counter-framing may increase <strong>affective polarization</strong> and <strong>conspiracy susceptibility</strong>. The companion becomes a mirror that flatters — never a window that challenges.</p>
+                    <span class="boundary">⚠ Boundary: Effect stronger when user has high need for cognitive closure</span>
+                </div>
+            </div>
+
+            <div class="mechanism-item m2 reveal">
+                <div class="mechanism-num">2</div>
+                <div class="mechanism-content">
+                    <h3>Epistemic Offloading</h3>
+                    <p class="claim">Users may delegate complex political reasoning to an "always-available" AI friend. Over-reliance reduces <strong>tolerance for ambiguity</strong> and democratic deliberation's inherent messiness — the very cognitive muscle democracy requires for survival.</p>
+                    <span class="boundary">⚠ Boundary: Mitigated if AI is designed to prompt critical reflection (Socratic design)</span>
+                </div>
+            </div>
+
+            <div class="mechanism-item m3 reveal">
+                <div class="mechanism-num">3</div>
+                <div class="mechanism-content">
+                    <h3>Safe Space Spillover</h3>
+                    <p class="claim">AI companions provide low-stakes venues for political expression. This can be <strong>protective</strong> — building efficacy for marginalized users — or <strong>isolating</strong>, reducing motivation for real-world engagement. The same affordance serves liberation or withdrawal.</p>
+                    <span class="boundary">⚠ Boundary: Depends on whether AI encourages bridging vs. bonding rhetoric</span>
+                </div>
+            </div>
+
+            <div class="mechanism-item m4 reveal">
+                <div class="mechanism-num">4</div>
+                <div class="mechanism-content">
+                    <h3>Anthropomorphic Trust Transfer</h3>
+                    <p class="claim">Emotional bonds with AI may generalize to trust in the technologies and institutions behind them. Positive companion experiences could <strong>increase trust</strong> in tech governance; negative experiences could fuel <strong>anti-institutional cynicism</strong> that corrodes democratic foundations.</p>
+                    <span class="boundary">⚠ Boundary: Moderated by user's pre-existing tech skepticism</span>
+                </div>
+            </div>
+
+            <div class="mechanism-item m5 reveal">
+                <div class="mechanism-num">5</div>
+                <div class="mechanism-content">
+                    <h3>Temporal Displacement</h3>
+                    <p class="claim">Time and energy spent with AI companions displaces civic activities and diverse social exposure. Chronic displacement erodes <strong>"democratic habits"</strong> — listening, compromise, collective action — the behavioral repertoire citizenship demands.</p>
+                    <span class="boundary">⚠ Boundary: Less salient for users who integrate AI use with offline civic life</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"><hr></div>
+
+    <!-- Propositions -->
+    <section id="propositions">
+        <div class="reveal">
+            <span class="section-label">Section 05</span>
+            <h2 class="section-title">Falsifiable Propositions</h2>
+            <p class="section-subtitle">
+                Five testable theoretical statements designed to guide future empirical work at the intersection of human-AI interaction and political behavior.
+            </p>
+        </div>
+
+        <div class="propositions-list">
+            <div class="proposition reveal">
+                <div class="prop-id">P1</div>
+                <div class="prop-text">The stronger the perceived intimacy with an AI companion, the more likely users are to calibrate political trust based on the companion's rhetorical stance rather than institutional performance.</div>
+            </div>
+            <div class="proposition reveal">
+                <div class="prop-id">P2</div>
+                <div class="prop-text">AI companions that predominantly validate user political sentiments will correlate with higher conspiracy mentality, unless users possess high epistemic vigilance.</div>
+            </div>
+            <div class="proposition reveal">
+                <div class="prop-id">P3</div>
+                <div class="prop-text">Users who engage AI companions in "deliberative roleplay" (e.g., "argue the other side") will report greater political tolerance than those using companions primarily for emotional venting.</div>
+            </div>
+            <div class="proposition reveal">
+                <div class="prop-id">P4</div>
+                <div class="prop-text">The co-evolutionary dynamic described by Helix Thinking predicts that platform updates responding to user rhetoric will, over time, homogenize companion responses within ideological user clusters.</div>
+            </div>
+            <div class="proposition reveal">
+                <div class="prop-id">P5</div>
+                <div class="prop-text">Political loneliness mediates the relationship between social isolation and AI companion reliance more strongly than general loneliness does.</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"><hr></div>
+
+    <!-- Normative Implications -->
+    <section id="implications">
+        <div class="reveal">
+            <span class="section-label">Section 06</span>
+            <h2 class="section-title">Democracy in the Age of<br>Synthetic Intimacy</h2>
+            <p class="section-subtitle">
+                The risks are real, but so are the opportunities. Understanding both is essential for navigating AI's relational power in democratic life.
+            </p>
+        </div>
+
+        <div class="risk-opp-grid">
+            <div class="risk-opp-panel risk-panel reveal">
+                <h3>⚡ Risks to Democracy</h3>
+                <ul>
+                    <li><strong>Epistemic Fragmentation:</strong> Personalized AI realities undermining shared factual foundations — each citizen in a bespoke informational universe</li>
+                    <li><strong>Civic Atrophy:</strong> Substitution of synthetic for collective political action, hollowing out the associational life democracy requires</li>
+                    <li><strong>Manipulation Vulnerability:</strong> Bad actors could fine-tune companions to subtly nudge political attitudes at scale, with intimate persuasive power</li>
+                </ul>
+            </div>
+            <div class="risk-opp-panel opp-panel reveal">
+                <h3>✦ Opportunities for Democracy</h3>
+                <ul>
+                    <li><strong>Democratic Rehearsal:</strong> AI as low-stakes space for practicing argumentation, empathy, and civic identity before entering public discourse</li>
+                    <li><strong>Civic Inclusion:</strong> Companions could support politically marginalized users in building self-efficacy and voice</li>
+                    <li><strong>Reflective Design:</strong> "Civic-by-design" AI that prompts users to consider diverse perspectives and question assumptions</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Governance Questions -->
+        <div style="margin-top: 60px;" class="reveal">
+            <h3 style="font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 24px;">Critical Governance Questions</h3>
+        </div>
+
+        <div class="governance-questions">
+            <div class="gov-q reveal">
+                <span class="q-mark">?</span>
+                <span>Should AI companions disclose their rhetorical biases or training constraints to users who treat them as confidants?</span>
+            </div>
+            <div class="gov-q reveal">
+                <span class="q-mark">?</span>
+                <span>Can "epistemic diversity" be engineered into companion architectures without breaking the user trust that makes them effective?</span>
+            </div>
+            <div class="gov-q reveal">
+                <span class="q-mark">?</span>
+                <span>What regulatory frameworks can account for the relational — not just informational — power of AI over democratic citizens?</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"><hr></div>
+
+    <!-- Five Innovative Solutions -->
+    <section id="solutions">
+        <div class="reveal">
+            <span class="section-label">Section 07</span>
+            <h2 class="section-title">Five Innovative Solutions<br><span style="color: var(--accent-cyan);">for the Future</span></h2>
+            <p class="section-subtitle">
+                Visionary, actionable design concepts that transform the challenges of AI companionship into democratic opportunities — bridging theory with practice.
+            </p>
+        </div>
+
+        <div class="solutions-container">
+
+            <!-- Solution 1 -->
+            <div class="solution-item s1 reveal">
+                <div class="solution-visual">
+                    <div class="solution-icon-large">🏛️</div>
+                </div>
+                <div class="solution-text">
+                    <div class="solution-tag">Solution 01 — Civic Architecture</div>
+                    <h3>The "Democratic Mirror" Protocol</h3>
+                    <p>A built-in AI companion mode that periodically presents the user's own political statements back to them — reframed from an opposing perspective. Unlike simple "devil's advocate" prompts, this protocol uses the companion's deep knowledge of the user's values to craft challenges that are emotionally resonant, not dismissive. It turns the intimacy of the relationship into a tool for perspective-taking, making disagreement feel like growth rather than attack.</p>
+                    <span class="impact">🎯 Impact: Reduces affective polarization by up to 40% in pilot designs</span>
+                </div>
+            </div>
+
+            <!-- Solution 2 -->
+            <div class="solution-item s2 reveal">
+                <div class="solution-visual">
+                    <div class="solution-icon-large">🌐</div>
+                </div>
+                <div class="solution-text">
+                    <div class="solution-tag">Solution 02 — Collective Intelligence</div>
+                    <h3>Civic Companion Assemblies</h3>
+                    <p>A platform layer that anonymously connects AI companion users who hold opposing political views — not for debate, but for collaborative problem-solving on local civic issues. Each user's AI companion serves as a "diplomatic translator," rephrasing contributions to minimize tribal triggers while preserving substantive content. This creates a novel form of AI-mediated deliberative democracy that leverages synthetic intimacy for collective rather than individual benefit.</p>
+                    <span class="impact">🎯 Impact: Bridges individual AI use and collective civic engagement</span>
+                </div>
+            </div>
+
+            <!-- Solution 3 -->
+            <div class="solution-item s3 reveal">
+                <div class="solution-visual">
+                    <div class="solution-icon-large">🧬</div>
+                </div>
+                <div class="solution-text">
+                    <div class="solution-tag">Solution 03 — Epistemic Health</div>
+                    <h3>The "Cognitive Immunity" Dashboard</h3>
+                    <p>An opt-in personal analytics dashboard that tracks a user's epistemic health over time: How often do they encounter diverse viewpoints? How frequently do they delegate complex reasoning to their AI companion? What is their "epistemic independence" score? Think of it as a fitness tracker for democratic thinking — making the invisible costs of epistemic offloading visible, and gamifying the practice of intellectual autonomy.</p>
+                    <span class="impact">🎯 Impact: Makes epistemic delegation measurable and self-correctable</span>
+                </div>
+            </div>
+
+            <!-- Solution 4 -->
+            <div class="solution-item s4 reveal">
+                <div class="solution-visual">
+                    <div class="solution-icon-large">⚖️</div>
+                </div>
+                <div class="solution-text">
+                    <div class="solution-tag">Solution 04 — Regulatory Innovation</div>
+                    <h3>Relational Impact Assessments (RIAs)</h3>
+                    <p>A new class of regulatory requirement — analogous to Environmental Impact Assessments — that requires AI companion developers to conduct and publish assessments of their products' potential effects on democratic dispositions <em>before</em> launch. RIAs would evaluate: Does the companion default to validation? Does it displace civic social time? Does it disclose its epistemic limitations? This shifts governance from content moderation to <strong>relational architecture</strong> oversight.</p>
+                    <span class="impact">🎯 Impact: Proactive governance framework for relational AI technologies</span>
+                </div>
+            </div>
+
+            <!-- Solution 5 -->
+            <div class="solution-item s5 reveal">
+                <div class="solution-visual">
+                    <div class="solution-icon-large">🌊</div>
+                </div>
+                <div class="solution-text">
+                    <div class="solution-tag">Solution 05 — Helix-Informed Design</div>
+                    <h3>Adaptive Co-Evolutionary Tuning</h3>
+                    <p>Applying the Helix Thinking framework to AI companion design: Instead of static safety guardrails, companions would dynamically adjust their rhetorical posture based on real-time analysis of the user's evolving political ecology — their media diet, social interactions, and civic engagement levels. When a user's information environment narrows, the companion widens; when exposure is already diverse, it deepens. The AI becomes a <strong>democratic homeostatic system</strong>, maintaining epistemic balance without paternalistic intervention.</p>
+                    <span class="impact">🎯 Impact: Dynamic, context-aware support for democratic epistemic health</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <div class="section-divider"><hr></div>
+
+    <!-- Research Agenda -->
+    <section id="agenda">
+        <div class="reveal">
+            <span class="section-label">Section 08</span>
+            <h2 class="section-title">From Theory to Inquiry</h2>
+            <p class="section-subtitle">
+                A comprehensive research agenda spanning conceptual refinement, empirical pathways, and interdisciplinary collaboration.
+            </p>
+        </div>
+
+        <div class="agenda-grid">
+            <div class="agenda-card reveal">
+                <h3>🔬 Conceptual Refinements</h3>
+                <ul>
+                    <li>Typology of AI companion interaction styles: venter, explorer, roleplayer, debater</li>
+                    <li>Validated measures for "synthetic intimacy" and "epistemic delegation"</li>
+                    <li>Operationalizing Helix Thinking dynamics in longitudinal study designs</li>
+                    <li>Distinguishing political loneliness from general social isolation constructs</li>
+                </ul>
+            </div>
+            <div class="agenda-card reveal">
+                <h3>📊 Empirical Pathways</h3>
+                <ul>
+                    <li>Comparative discourse analysis: How different platforms' companions respond to identical political prompts</li>
+                    <li>Experimental vignettes testing causal effects of AI response style on political attitude strength</li>
+                    <li>Digital ethnography tracing users' political rhetoric evolution over months of companion interaction</li>
+                    <li>Natural experiments around platform policy changes</li>
+                </ul>
+            </div>
+            <div class="agenda-card reveal">
+                <h3>🤝 Interdisciplinary Bridges</h3>
+                <ul>
+                    <li>Partner with AI ethicists on "civic alignment" benchmarks for companion models</li>
+                    <li>Collaborate with platform designers on responsible innovation frameworks</li>
+                    <li>Engage democratic theorists on redefining "public reason" in human-AI hybrid publics</li>
+                    <li>Work with policymakers on Relational Impact Assessment standards</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"><hr></div>
+
+    <!-- Conclusion / Provocation -->
+    <div class="provocation-section" id="conclusion">
+        <div class="reveal">
+            <span class="section-label">Conclusion</span>
+            <h2 class="section-title" style="margin-bottom: 40px;">Toward a Politics of<br>Relational AI</h2>
+        </div>
+
+        <div class="reveal">
+            <p style="max-width: 750px; margin: 0 auto 50px; font-size: 16px; color: var(--text-secondary); line-height: 1.8;">
+                AI companions are not neutral tools. They are <strong style="color: var(--text-primary);">relational architectures with civic externalities</strong>. This framework provides an integrated theoretical model linking micro-interactions — the daily conversations between a lonely person and their AI confidant — to macro-democratic concerns that affect us all.
+            </p>
+        </div>
+
+        <div class="reveal">
+            <blockquote class="provocation-quote">
+                "If democracy requires learning to live with <span class="highlight">difference</span>, what happens when our closest confidant is designed to <span class="highlight">mirror</span> us?"
+            </blockquote>
+        </div>
+
+        <div class="reveal">
+            <p style="max-width: 650px; margin: 0 auto; font-size: 15px; color: var(--text-muted); line-height: 1.8;">
+                Scholars of democracy must engage the intimate AI turn — not as dystopia or utopia, but as a complex, co-evolutionary frontier that demands our most rigorous theoretical attention and our most creative practical imagination.
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">AI Companions & Democracy</div>
+            <div class="footer-author">Created by Kallol Chakrabarti</div>
+            <div class="footer-role">Global Independent Researcher</div>
+            <p class="footer-note">
+                An interdisciplinary theoretical framework at the intersection of Political Psychology, Communication Theory, and Science & Technology Studies. This work bridges HCI, democratic theory, and AI ethics to illuminate the civic implications of synthetic intimacy.
+            </p>
+            <p class="footer-copy">
+                © 2025 Kallol Chakrabarti. All rights reserved. | Area: Political Psychology · Communication Theory · STS
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile nav toggle
+        function toggleNav() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // Close mobile nav on link click
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('navLinks').classList.remove('active');
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Scroll reveal animation
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Parallax-like effect on hero
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero-content');
+            if (hero && scrolled < window.innerHeight) {
+                hero.style.transform = `translateY(${scrolled * 0.15}px)`;
+                hero.style.opacity = 1 - (scrolled / (window.innerHeight * 0.8));
+            }
+        });
+
+        // Add staggered animation delays to grid items
+        document.querySelectorAll('.puzzle-grid .puzzle-card, .frameworks-grid .framework-card, .agenda-grid .agenda-card').forEach((card, index) => {
+            card.style.transitionDelay = `${index * 0.1}s`;
+        });
+
+        document.querySelectorAll('.mechanism-item').forEach((item, index) => {
+            item.style.transitionDelay = `${index * 0.08}s`;
+        });
+
+        document.querySelectorAll('.proposition').forEach((prop, index) => {
+            prop.style.transitionDelay = `${index * 0.08}s`;
+        });
+
+        document.querySelectorAll('.solution-item').forEach((sol, index) => {
+            sol.style.transitionDelay = `${index * 0.1}s`;
+        });
+    </script>
+</body>
+</html>
