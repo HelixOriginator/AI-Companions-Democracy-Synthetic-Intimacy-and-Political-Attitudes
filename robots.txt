@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://helixoriginator.github.io/AI-Companions-Democracy-Synthetic-Intimacy-and-Political-Attitudes/sitemap.xml
